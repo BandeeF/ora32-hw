@@ -1,0 +1,35 @@
+---
+- name: Install Nginx on web server
+  hosts: web
+  become: yes
+  tasks:
+    - name: Install nginx package
+      ansible.builtin.package:
+        name: nginx
+        state: present
+      notify: Restart Nginx
+
+    - name: Enable service nginx, and not touch the state
+      ansible.builtin.service:
+        name: nginx
+        enabled: yes
+
+    - name: Modify index.html with template
+      template:
+        src: index.j2
+        dest: /usr/share/nginx/html/index.html
+      notify: Restart Nginx
+
+    - name: Permanently enable http service, also enable it immediately if possible
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+        permanent: true
+        immediate: true
+        offline: true
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

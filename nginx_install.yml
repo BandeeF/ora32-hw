@@ -16,7 +16,7 @@
 
     - name: Modify index.html with template
       template:
-        src: index.j2
+        src: /shared/index.j2
         dest: /usr/share/nginx/html/index.html
       notify: Restart Nginx
 
